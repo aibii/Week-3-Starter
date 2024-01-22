@@ -56,4 +56,24 @@ public class MainController {
         
         return profile;
     }
+
+    @PostMapping("/profiles/{id}/add-postings")
+    public Posting addPosting(@PathVariable Integer id, @RequestBody Posting posting) {
+        Posting newPosting = null;
+        Profile profile = model.getProfileById(id);
+        if (profile != null)
+            newPosting = model.addPosting(profile, posting);
+        return newPosting;
+    }
+
+    @PostMapping("profiles/{userName}/postings")
+    public Posting addPosting(@PathVariable String userName, @RequestBody Posting posting) {
+        Profile profile = model.getProfileByUserName(userName);
+        if (profile != null)
+            posting = model.addPosting(profile, posting);
+        return posting;
+    }
+
+    //The second is to add a Posting to the Postings collection using the userName as a query parameter.
+
 }

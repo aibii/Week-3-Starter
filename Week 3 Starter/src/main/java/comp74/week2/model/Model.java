@@ -68,4 +68,8 @@ public class Model {
         return new ArrayList<>(Arrays.asList(profile));
     }
 
+    public Profile getProfileByUserName(String userName) {
+        Profile profile = userMap.get(userName);
+        return profile;
+    }
 }
