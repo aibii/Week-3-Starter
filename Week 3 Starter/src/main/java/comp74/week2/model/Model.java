@@ -134,8 +134,16 @@ public class Model {
         return postings;
     }
 
+    /*
+     * This method deletes a profile with given profileId from the model.
+     * Retrieve the profile using the provided profileId.
+     * If postings list is empty, remove the profile from the global profiles collection.
+     * Also remove the profile from the global userMap collection if the profile was removed.
+     */
     public void deleteProfile(Profile profile) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteProfile'");
+        if(postings.size() == 0) {
+            profiles.remove(profile.getProfileId());
+            userMap.remove(profile.getUserName());
+        }
     }
 }

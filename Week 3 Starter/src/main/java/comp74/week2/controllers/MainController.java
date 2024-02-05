@@ -12,6 +12,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -100,37 +102,53 @@ public class MainController {
     }
 
 
-    //Delete a posting belonging to a given profile
     @DeleteMapping("/profiles/{id}/postings/{postingId}")
-    //write log message
-    //log message is a string that we want to print to the console
-
-    public Posting deletePosting(@PathVariable Integer id, @PathVariable Integer postingId) {
-        Boolean deleted = false;
-        Posting posting = null;
+    public ResponseEntity<?> deletePosting(@PathVariable Integer id, @PathVariable Integer postingId) {
         Profile profile = model.getProfileById(id);
-        if (profile != null) //if profile exists we delete posting with the given posting id
-            logger.info("Deleting posting with id: " + postingId);
-            deleted = model.deletePosting(id, postingId);
-        return deleted ? posting : null;
+        if (profile == null) {
+            logger.info("Profile with id: {} not found", id);
+            return ResponseEntity.notFound().build(); // 404 Not Found if the profile doesn't exist
+        }
+        
+        boolean deleted = model.deletePosting(id, postingId);
+        if (deleted) {
+            logger.info("Deleted posting with id: {} from profile with id: {}", postingId, id);
+            return ResponseEntity.noContent().build(); // 204 No Content if the posting was successfully deleted
+        } else {
+            logger.info("Posting with id: {} not found in profile with id: {}", postingId, id);
+            return ResponseEntity.notFound().build(); // 404 Not Found if the posting wasn't found in the profile
+        }
     }
 
     //Delete all postings belonging to a given profile.
     @DeleteMapping("/profiles/{id}/postings")
-    public List<Posting> deletePostings(@PathVariable Integer id) {
-        List<Posting> postings = null;
+        public ResponseEntity<?> deletePostings(@PathVariable Integer id) {
         Profile profile = model.getProfileById(id);
-        if (profile != null) //if profile exists we delete all postings
-            postings = model.deletePostings(profile);
-        return postings;
+        if (profile == null) {
+            return ResponseEntity.notFound().build(); // 404 Not Found if profile doesn't exist
+        }
+        
+        List<Posting> deletedPostings = model.deletePostings(profile);
+        if (deletedPostings.isEmpty()) {
+            return ResponseEntity.noContent().build(); // 204 No Content if no postings to delete
+        }
+        
+        return ResponseEntity.ok(deletedPostings); // Return deleted postings with 200 OK
     }
 
     //DELETE a given profile only if all postings have been deleted
     @DeleteMapping("/profiles/{id}")
-    public Profile deleteProfile(@PathVariable Integer id) {
+        public ResponseEntity<?> deleteProfile(@PathVariable Integer id) {
         Profile profile = model.getProfileById(id);
-        if (profile != null) //if profile exists we delete it
-            model.deleteProfile(profile);
-        return profile;   
+        if (profile == null) {
+            return ResponseEntity.notFound().build(); // 404 Not Found if profile doesn't exist
+        }
+        
+        if (!profile.getPostings().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Profile still has postings."); // 409 Conflict if postings exist
+        }
+        
+        model.deleteProfile(profile);
+        return ResponseEntity.noContent().build(); // 204 No Content on successful deletion
     }
 }
