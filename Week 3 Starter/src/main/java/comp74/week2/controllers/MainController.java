@@ -101,7 +101,6 @@ public class MainController {
         return newPosting;
     }
 
-
     @DeleteMapping("/profiles/{id}/postings/{postingId}")
     public ResponseEntity<?> deletePosting(@PathVariable Integer id, @PathVariable Integer postingId) {
         Profile profile = model.getProfileById(id);
@@ -150,5 +149,5 @@ public class MainController {
         
         model.deleteProfile(profile);
         return ResponseEntity.noContent().build(); // 204 No Content on successful deletion
-    }
+    }     
 }
