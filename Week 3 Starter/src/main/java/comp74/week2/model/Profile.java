@@ -23,4 +23,8 @@ public class Profile {
         postings.add(posting);
     }
 
+    public void removePosting(Posting posting) {
+        postings.remove(posting);
+    }
+
 }
