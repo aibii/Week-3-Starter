@@ -119,31 +119,12 @@ public class Model {
         return deleted;
     }
 
-    /* public Boolean deletePostingById(Integer postingId) {
-        Posting posting = getPostingById(postingId);
-        if(posting != null) {
-            String userName = posting.getUserName();
-            Profile profile = getProfileByUserName(userName).get(0);
-            List<Posting> profilePostings = profile.getPostings();
-            profilePostings.remove(posting);
-            postings.remove(postingId);
-            return true;
-        } else
-            return false;
-    }
-     * 
-     * 
-     * @DeleteMapping("/postings/{postingId}")
-     * public ResponseEntity<Void> putMethodName(@PathVariable Integer postingId) {
-     * Boolean 
-     * 
-     * 
-     * 
-     * This method deletes a posting with given postingId from the model.
-     * If the posting existss then:
-     * 1) Use the userName 
+    /*
+     * This method deletes all postings from the given profile.
+     * Iterate through each posting and remove it from the global postings collection using its ID.
+     * Clear the profile's postings list to reflect that all postings have been deleted.
+     * Return the list of postings that were removed from the profile.
      */
-
     public List<Posting> deletePostings(Profile profile) {
         List<Posting> postings = profile.getPostings();
         for (Posting posting : postings) {
